@@ -13,7 +13,7 @@ func TestReadDirectory(t *testing.T) {
 	packet := grids.CreateGridPacket(file)
 
 	ev := dir.Out("res")
-	ev.Or(func(i interface{}) {
+	ev.Receive(func(i interface{}) {
 		res, ok := i.(*grids.GridPacket)
 
 		if !ok {
@@ -36,7 +36,7 @@ func TestReadFile(t *testing.T) {
 	packet := grids.CreateGridPacket(grids.GridMap{"file": "./fsgrid.go"})
 
 	ev := file.Out("res")
-	ev.Or(func(i interface{}) {
+	ev.Receive(func(i interface{}) {
 		res, ok := i.(*grids.GridPacket)
 
 		if !ok {
@@ -61,7 +61,7 @@ func TestFileControl(t *testing.T) {
 	rev := file.Out("res")
 	re := file.Out("err")
 
-	re.Or(func(i interface{}) {
+	re.Receive(func(i interface{}) {
 		res, ok := i.(*grids.GridPacket)
 
 		if !ok {
@@ -73,7 +73,7 @@ func TestFileControl(t *testing.T) {
 		}
 	})
 
-	rev.Or(func(i interface{}) {
+	rev.Receive(func(i interface{}) {
 		res, ok := i.(*grids.GridPacket)
 
 		if !ok {

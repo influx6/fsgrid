@@ -52,7 +52,7 @@ func CreateFSDir() *FSDir {
 
 	root, _ := os.Getwd()
 
-	dir.In("read").Or(func(i interface{}) {
+	dir.In("read").Receive(func(i interface{}) {
 		fp, ok := i.(*grids.GridPacket)
 
 		if !ok {
@@ -120,7 +120,7 @@ func CreateFSDir() *FSDir {
 		return
 	})
 
-	dir.In("write").Or(func(i interface{}) {
+	dir.In("write").Receive(func(i interface{}) {
 		fp, ok := i.(*grids.GridPacket)
 
 		if !ok {
@@ -193,7 +193,7 @@ func CreateFSFile() *FSFile {
 
 	root, _ := os.Getwd()
 
-	dir.In("read").Or(func(i interface{}) {
+	dir.In("read").Receive(func(i interface{}) {
 		fp, ok := i.(*grids.GridPacket)
 
 		if !ok {
@@ -264,7 +264,7 @@ func CreateFSFile() *FSFile {
 		return
 	})
 
-	dir.In("write").Or(func(i interface{}) {
+	dir.In("write").Receive(func(i interface{}) {
 		fp, ok := i.(*grids.GridPacket)
 
 		if !ok {
@@ -393,7 +393,7 @@ func CreateFSControl(base string) (*FSControl, error) {
 
 	in := dir.In("file")
 
-	in.Or(func(i interface{}) {
+	in.Receive(func(i interface{}) {
 		fp, ok := i.(*grids.GridPacket)
 
 		if !ok {
