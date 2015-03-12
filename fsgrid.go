@@ -186,17 +186,17 @@ func CreateFSDir() *FSDir {
 }
 
 func CreateFSFile() *FSFile {
-	var dir = &FSFile{grids.NewGrid("fs.File")}
+	var thefile = &FSFile{grids.NewGrid("fs.File")}
 
-	dir.NewIn("read")
-	dir.NewIn("write")
+	thefile.NewIn("read")
+	thefile.NewIn("write")
 
-	dir.NewOut("err")
-	dir.NewOut("res")
+	thefile.NewOut("err")
+	thefile.NewOut("res")
 
 	root, _ := os.Getwd()
 
-	dir.In("read").Receive(func(i interface{}) {
+	thefile.In("read").Receive(func(i interface{}) {
 		fp, ok := i.(*grids.GridPacket)
 
 		if !ok {
@@ -217,7 +217,7 @@ func CreateFSFile() *FSFile {
 			err := errors.New("Invalid packet map, no 'file' included")
 			// fp.Body["err"] = err
 			fp.Set("err", err)
-			dir.OutSend("err", fp)
+			thefile.OutSend("err", fp)
 			return
 		}
 
@@ -226,7 +226,7 @@ func CreateFSFile() *FSFile {
 		if err != nil {
 			// fp.Body["err"] = err
 			fp.Set("err", err)
-			dir.OutSend("err", fp)
+			thefile.OutSend("err", fp)
 			return
 		}
 
@@ -235,7 +235,7 @@ func CreateFSFile() *FSFile {
 			if err != nil {
 				fp.Set("err", err)
 				// fp.Body["err"] = err
-				dir.OutSend("err", fp)
+				thefile.OutSend("err", fp)
 				return
 			}
 
@@ -245,7 +245,7 @@ func CreateFSFile() *FSFile {
 			if err != nil {
 				// fp.Body["err"] = err
 				fp.Set("err", err)
-				dir.OutSend("err", fp)
+				thefile.OutSend("err", fp)
 				return
 			}
 
@@ -259,7 +259,7 @@ func CreateFSFile() *FSFile {
 
 			pack.Freeze()
 
-			dir.OutSend("res", pack)
+			thefile.OutSend("res", pack)
 
 			return
 		}
@@ -267,12 +267,12 @@ func CreateFSFile() *FSFile {
 		de := errors.New("path is not a file: " + basefile)
 		// fp.Body["err"] = de
 		fp.Set("err", de)
-		dir.OutSend("err", fp)
+		thefile.OutSend("err", fp)
 
 		return
 	})
 
-	dir.In("write").Receive(func(i interface{}) {
+	thefile.In("write").Receive(func(i interface{}) {
 		fp, ok := i.(*grids.GridPacket)
 
 		if !ok {
@@ -293,7 +293,7 @@ func CreateFSFile() *FSFile {
 			err := errors.New("Invalid packet map, no 'file' included")
 			// fp.Body["err"] = err
 			fp.Set("err", err)
-			dir.OutSend("err", fp)
+			thefile.OutSend("err", fp)
 			return
 		}
 
@@ -302,7 +302,7 @@ func CreateFSFile() *FSFile {
 		if err != nil {
 			// fp.Body["err"] = err
 			fp.Set("err", err)
-			dir.OutSend("err", fp)
+			thefile.OutSend("err", fp)
 			return
 		}
 
@@ -311,7 +311,7 @@ func CreateFSFile() *FSFile {
 			if err != nil {
 				// fp.Body["err"] = err
 				fp.Set("err", err)
-				dir.OutSend("err", fp)
+				thefile.OutSend("err", fp)
 				return
 			}
 
@@ -329,7 +329,7 @@ func CreateFSFile() *FSFile {
 			if _, err := rb.Write(data); err != nil {
 				// fp.Body["err"] = err
 				fp.Set("err", err)
-				dir.OutSend("err", fp)
+				thefile.OutSend("err", fp)
 				return
 			}
 
@@ -339,12 +339,12 @@ func CreateFSFile() *FSFile {
 		de := errors.New("path is not a file: " + basefile)
 		fp.Set("err", de)
 		// fp.Body["err"] = de
-		dir.OutSend("err", fp)
+		thefile.OutSend("err", fp)
 
 		return
 	})
 
-	return dir
+	return thefile
 }
 
 func ReadFile(file string) *FileReader {
