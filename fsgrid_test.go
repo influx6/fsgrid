@@ -9,8 +9,8 @@ import (
 
 func TestReadDirectory(t *testing.T) {
 	dir := CreateFSDir()
-	file := grids.GridMap{"file": "."}
-	packet := grids.CreateGridPacket(file)
+	packet := grids.NewPacket()
+	packet.Set("file", ".")
 
 	ev := dir.Out("res")
 	ev.Receive(func(i interface{}) {
@@ -33,7 +33,8 @@ func TestReadDirectory(t *testing.T) {
 
 func TestReadFile(t *testing.T) {
 	file := CreateFSFile()
-	packet := grids.CreateGridPacket(grids.GridMap{"file": "./fsgrid.go"})
+	packet := grids.NewPacket()
+	packet.Set("file", "./fsgrid.go")
 
 	ev := file.Out("res")
 	ev.Receive(func(i interface{}) {
@@ -55,8 +56,11 @@ func TestReadFile(t *testing.T) {
 
 func TestFileControl(t *testing.T) {
 	file, _ := CreateFSControl("./")
-	packet := grids.CreateGridPacket(grids.GridMap{"file": "./fsgrid.go"})
-	epacket := grids.CreateGridPacket(grids.GridMap{"file": "./reflowj.go"})
+	packet := grids.NewPacket()
+	packet.Set("file", "./fsgrid.go")
+
+	epacket := grids.NewPacket()
+	epacket.Set("file", "./reflowj.go")
 
 	rev := file.Out("res")
 	re := file.Out("err")
@@ -68,7 +72,7 @@ func TestFileControl(t *testing.T) {
 			t.Fatalf("value is not a gridpacket", i, res, file)
 		}
 
-		if _, ok := res.Body["err"]; !ok {
+		if !res.Has("err") {
 			t.Fatalf("should have an error attr", res, file, epacket)
 		}
 	})

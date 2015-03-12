@@ -59,7 +59,7 @@ func CreateFSDir() *FSDir {
 			return
 		}
 
-		file, ok := fp.Body["file"].(string)
+		file, ok := fp.Get("file").(string)
 		var basefile string
 
 		if !fpath.IsAbs(file) {
@@ -70,7 +70,8 @@ func CreateFSDir() *FSDir {
 
 		if !ok {
 			err := errors.New("Invalid packet map, no 'file' included")
-			fp.Body["err"] = err
+			// fp.Body["err"] = err
+			fp.Set("err", err)
 			dir.OutSend("err", fp)
 			return
 		}
@@ -78,7 +79,8 @@ func CreateFSDir() *FSDir {
 		mod, err := os.Stat(basefile)
 
 		if err != nil {
-			fp.Body["err"] = err
+			// fp.Body["err"] = err
+			fp.Set("err", err)
 			dir.OutSend("err", fp)
 			return
 		}
@@ -86,7 +88,8 @@ func CreateFSDir() *FSDir {
 		if mod.Mode().IsDir() {
 			rb, err := os.Open(basefile)
 			if err != nil {
-				fp.Body["err"] = err
+				// fp.Body["err"] = err
+				fp.Set("err", err)
 				dir.OutSend("err", fp)
 				return
 			}
@@ -94,13 +97,15 @@ func CreateFSDir() *FSDir {
 			list, err := rb.Readdir(-1)
 
 			if err != nil {
-				fp.Body["err"] = err
+				// fp.Body["err"] = err
+				fp.Set("err", err)
 				dir.OutSend("err", fp)
 				return
 			}
 
-			pack := grids.CreateGridPacket(fp.Body)
-			pack.Body["absolutefile"] = basefile
+			pack := grids.NewPacket()
+			pack.Copy(fp.Map.Map())
+			pack.Set("absolutefile", basefile)
 
 			for _, val := range list {
 				pack.Push(val)
@@ -114,7 +119,8 @@ func CreateFSDir() *FSDir {
 		}
 
 		de := errors.New("path is not a directory: " + basefile)
-		fp.Body["err"] = de
+		// fp.Body["err"] = de
+		fp.Set("err", de)
 		dir.OutSend("err", fp)
 
 		return
@@ -127,11 +133,11 @@ func CreateFSDir() *FSDir {
 			return
 		}
 
-		file, ok := fp.Body["file"].(string)
+		file, ok := fp.Get("file").(string)
 
 		if !ok {
 			err := errors.New("Invalid packet map, no 'file' included")
-			fp.Body["err"] = err
+			fp.Set("err", err)
 			dir.OutSend("err", fp)
 			return
 		}
@@ -149,7 +155,8 @@ func CreateFSDir() *FSDir {
 		if err != nil {
 			os.Mkdir(basefile, 0777)
 		} else if !mod.Mode().IsDir() {
-			fp.Body["err"] = err
+			// fp.Body["err"] = err
+			fp.Set("err", err)
 			dir.OutSend("err", fp)
 			return
 		}
@@ -165,7 +172,7 @@ func CreateFSDir() *FSDir {
 			err := os.Mkdir(dirpath, 0777)
 
 			if err != nil {
-				fp.Body["err"] = err
+				fp.Set("err", err)
 				dir.OutSend("err", fp)
 				return
 			}
@@ -196,7 +203,8 @@ func CreateFSFile() *FSFile {
 			return
 		}
 
-		file, ok := fp.Body["file"].(string)
+		// file, ok := fp.Body["file"].(string)
+		file, ok := fp.Get("file").(string)
 		var basefile string
 
 		if !fpath.IsAbs(file) {
@@ -207,7 +215,8 @@ func CreateFSFile() *FSFile {
 
 		if !ok {
 			err := errors.New("Invalid packet map, no 'file' included")
-			fp.Body["err"] = err
+			// fp.Body["err"] = err
+			fp.Set("err", err)
 			dir.OutSend("err", fp)
 			return
 		}
@@ -215,7 +224,8 @@ func CreateFSFile() *FSFile {
 		mod, err := os.Stat(basefile)
 
 		if err != nil {
-			fp.Body["err"] = err
+			// fp.Body["err"] = err
+			fp.Set("err", err)
 			dir.OutSend("err", fp)
 			return
 		}
@@ -223,7 +233,8 @@ func CreateFSFile() *FSFile {
 		if !mod.Mode().IsDir() {
 			rb, err := os.Open(basefile)
 			if err != nil {
-				fp.Body["err"] = err
+				fp.Set("err", err)
+				// fp.Body["err"] = err
 				dir.OutSend("err", fp)
 				return
 			}
@@ -232,15 +243,15 @@ func CreateFSFile() *FSFile {
 			n, err := rb.Read(data)
 
 			if err != nil {
-				fp.Body["err"] = err
+				// fp.Body["err"] = err
+				fp.Set("err", err)
 				dir.OutSend("err", fp)
 				return
 			}
 
-			fm := fp.Body
-			fm["absoluteFile"] = basefile
-			fm["read"] = n
-			pack := grids.CreateGridPacket(fm)
+			fp.Set("absoluteFile", basefile)
+			fp.Set("read", n)
+			pack := grids.NewPacket()
 
 			for _, val := range data {
 				pack.Push(val)
@@ -254,7 +265,8 @@ func CreateFSFile() *FSFile {
 		}
 
 		de := errors.New("path is not a file: " + basefile)
-		fp.Body["err"] = de
+		// fp.Body["err"] = de
+		fp.Set("err", de)
 		dir.OutSend("err", fp)
 
 		return
@@ -267,7 +279,8 @@ func CreateFSFile() *FSFile {
 			return
 		}
 
-		file, ok := fp.Body["file"].(string)
+		// file, ok := fp.Body["file"].(string)
+		file, ok := fp.Get("file").(string)
 		var basefile string
 
 		if !fpath.IsAbs(file) {
@@ -278,7 +291,8 @@ func CreateFSFile() *FSFile {
 
 		if !ok {
 			err := errors.New("Invalid packet map, no 'file' included")
-			fp.Body["err"] = err
+			// fp.Body["err"] = err
+			fp.Set("err", err)
 			dir.OutSend("err", fp)
 			return
 		}
@@ -286,7 +300,8 @@ func CreateFSFile() *FSFile {
 		mod, err := os.Stat(basefile)
 
 		if err != nil {
-			fp.Body["err"] = err
+			// fp.Body["err"] = err
+			fp.Set("err", err)
 			dir.OutSend("err", fp)
 			return
 		}
@@ -294,7 +309,8 @@ func CreateFSFile() *FSFile {
 		if !mod.Mode().IsDir() {
 			rb, err := os.Open(basefile)
 			if err != nil {
-				fp.Body["err"] = err
+				// fp.Body["err"] = err
+				fp.Set("err", err)
 				dir.OutSend("err", fp)
 				return
 			}
@@ -311,7 +327,8 @@ func CreateFSFile() *FSFile {
 			})
 
 			if _, err := rb.Write(data); err != nil {
-				fp.Body["err"] = err
+				// fp.Body["err"] = err
+				fp.Set("err", err)
 				dir.OutSend("err", fp)
 				return
 			}
@@ -320,7 +337,8 @@ func CreateFSFile() *FSFile {
 		}
 
 		de := errors.New("path is not a file: " + basefile)
-		fp.Body["err"] = de
+		fp.Set("err", de)
+		// fp.Body["err"] = de
 		dir.OutSend("err", fp)
 
 		return
@@ -334,7 +352,8 @@ func ReadFile(file string) *FileReader {
 	f.NewIn("file")
 
 	f.OrIn("file", func(g *grids.GridPacket) {
-		g.Body["file"] = f.Path
+		g.Set("file", f.Path)
+		// g.Body["file"] = f.Path
 		f.InSend("read", g)
 	})
 
@@ -346,7 +365,7 @@ func ReadDir(file string) *DirReader {
 	f.NewIn("file")
 
 	f.OrIn("file", func(g *grids.GridPacket) {
-		g.Body["file"] = f.Path
+		g.Set("file", f.Path)
 		f.InSend("read", g)
 	})
 
@@ -358,7 +377,7 @@ func WriteFile(file string) *FileWriter {
 	f.NewIn("file")
 
 	f.OrIn("file", func(g *grids.GridPacket) {
-		g.Body["file"] = f.Path
+		g.Set("file", f.Path)
 		f.InSend("write", g)
 	})
 
@@ -370,7 +389,7 @@ func WriteDir(file string) *DirWriter {
 	f.NewIn("file")
 
 	f.OrIn("file", func(g *grids.GridPacket) {
-		g.Body["file"] = f.Path
+		g.Set("file", f.Path)
 		f.InSend("write", g)
 	})
 
@@ -396,7 +415,7 @@ func CreateFSControl(base string) (*FSControl, error) {
 			return
 		}
 
-		file, ok := fp.Body["file"].(string)
+		file, ok := fp.Get("file").(string)
 		var bfile string
 
 		if !fpath.IsAbs(file) {
@@ -407,7 +426,8 @@ func CreateFSControl(base string) (*FSControl, error) {
 
 		if !ok {
 			err := errors.New("Invalid packet map, no 'file' included")
-			fp.Body["err"] = err
+			fp.Set("err", err)
+			// fp.Body["err"] = err
 			dir.OutSend("err", fp)
 			return
 		}
@@ -424,14 +444,15 @@ func CreateFSControl(base string) (*FSControl, error) {
 		if err != nil {
 			if os.IsNotExist(err) {
 				err := errors.New("Invalid path" + bfile)
-				fp.Body["err"] = err
+				fp.Set("err", err)
+				// fp.Body["err"] = err
 				dir.OutSend("err", fp)
 				return
 			}
 		}
 
-		fp.Body["oldfile"] = file
-		fp.Body["file"] = bfile
+		fp.Set("oldfile", file)
+		fp.Set("file", bfile)
 
 		dir.OutSend("res", fp)
 	})
