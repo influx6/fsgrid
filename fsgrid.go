@@ -128,13 +128,6 @@ func CreateFSDir() *FSDir {
 		}
 
 		file, ok := fp.Body["file"].(string)
-		var basefile string
-
-		if !fpath.IsAbs(file) {
-			basefile = fpath.Join(root, file)
-		} else {
-			basefile = file
-		}
 
 		if !ok {
 			err := errors.New("Invalid packet map, no 'file' included")
@@ -143,40 +136,43 @@ func CreateFSDir() *FSDir {
 			return
 		}
 
+		var basefile string
+
+		if !fpath.IsAbs(file) {
+			basefile = fpath.Join(root, file)
+		} else {
+			basefile = file
+		}
+
 		mod, err := os.Stat(basefile)
 
 		if err != nil {
+			os.Mkdir(basefile, 0777)
+		} else if !mod.Mode().IsDir() {
 			fp.Body["err"] = err
 			dir.OutSend("err", fp)
 			return
 		}
 
-		if mod.Mode().IsDir() {
-			fp.Offload(func(i interface{}) {
-				nm, ok := i.(string)
+		fp.Offload(func(i interface{}) {
+			nm, ok := i.(string)
 
-				if !ok {
-					return
-				}
+			if !ok {
+				return
+			}
 
-				dirpath := fpath.Join(basefile, nm)
-				err := os.Mkdir(dirpath, 0777)
+			dirpath := fpath.Join(basefile, nm)
+			err := os.Mkdir(dirpath, 0777)
 
-				if err != nil {
-					fp.Body["err"] = err
-					dir.OutSend("err", fp)
-					return
-				}
-			})
-
-			return
-		}
-
-		de := errors.New("path is not a directory: " + basefile)
-		fp.Body["err"] = de
-		dir.OutSend("err", fp)
+			if err != nil {
+				fp.Body["err"] = err
+				dir.OutSend("err", fp)
+				return
+			}
+		})
 
 		return
+
 	})
 
 	return dir
