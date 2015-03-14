@@ -1,34 +1,33 @@
 #FSGrid
-    FSGrid is an extension package of the functional golang version of FBP [1]Grids and it implements the necessary file system structures for use in the functional fbp pattern
+FSGrid is an extension package of the functional golang version of FBP [1]Grids and it implements the necessary file system structures for use in the functional fbp pattern
 
 ##Install
     
-        go get github.com/influx/fsgrid
-
-    Then
-
-        go install github.com/influx/fsgrid
+    go get github.com/influx/fsgrid
+ 
+ Then
+ 
+    go install github.com/influx/fsgrid
 
 ##API
-    Fsgrid ensures to implement as much basic FileSystem structures that can be composed to get the different functionality desired and it will continousely evolve to ensure best practices. The api is driven to provided majorly three class of operations based on Files,Directory and Control.
+Fsgrid ensures to implement as much basic FileSystem structures that can be composed to get the different functionality desired and it will continousely evolve to ensure best practices. The api is driven to provided majorly three class of operations based on Files,Directory and Control.
 
-    *   Directories: This structs composed the Grids API and create specific grid based struct that handle directory reading and writing operations and for easier use there exists simple instance creating functions to simplify its use:
+####Directories: 
+This structs composed the Grids API and create specific grid based struct that handle directory reading and writing operations and for easier use there exists simple instance creating functions to simplify its use:
 
-        *   FSDir: This grid struct handle the reading and writing of directory by providing two channels (“Read” and “Write”) that recieves grid packets that contain as <header> file paths and meta details and in the case of writers streams of data as <body> to be written. Readers and Writers structs are built based on this struct(compose on this struct) as it encapsulates the basic operations.
+-  FSDir: This grid struct handle the reading and writing of directory by providing two channels (“Read” and “Write”) that recieves grid packets that contain as <header> file paths and meta details and in the case of writers streams of data as <body> to be written. Readers and Writers structs are built based on this struct(compose on this struct) as it encapsulates the basic operations.
 
-        Helper Functions include:
+    Helper Functions include:
 
-        1.  CreateFSDir: This creates a FSDir struct  and returns a point which has included all the necessary logic 
-        for the reading and writing of directories,its logic is written in a way to allow multiple use i.e not bound to specific paths so as to allow it to be like a reader and writer request manager, writing or reading to or from directory paths within the packet `<header>`  and in the case of a writer, the Packet packets sequence is treated as subdirectories to be created in the specified path
+    1.  CreateFSDir: This creates a FSDir struct  and returns a point which has included all the necessary logic for the reading and writing of directories,its logic is written in a way to allow multiple use i.e not bound to specific paths so as to allow it to be like a reader and writer request manager, writing or reading to or from directory paths within the packet `<header>`  and in the case of a writer, the Packet packets sequence is treated as subdirectories to be created in the specified path
 
-        2.   ReadDir(file string): This helper creates a DirReader struct which enforces a one directory reading operation i.e this creates a Reader that encapsulates and on servers the read channel of a FSDir grid for read only operations.
+    2.   ReadDir(file string): This helper creates a DirReader struct which enforces a one directory reading operation i.e this creates a Reader that encapsulates and on servers the read channel of a FSDir grid for read only operations.
 
-       3.   WriteDir(file string): This helper creates a DirWriter struct which enforces a one directory writing operation and maps all its operations down to the FSDir write channel. If the given Path in the <header> does not exists, it will be created and the packets will be treated as subdirectories to be created within the path given
+    3.   WriteDir(file string): This helper creates a DirWriter struct which enforces a one directory writing operation and maps all its operations down to the FSDir write channel. If the given Path in the <header> does not exists, it will be created and the packets will be treated as subdirectories to be created within the path given
 
-
-       Examples:
+    Examples:
            
-           -    Using FSDir direcctly:
+    -    Using FSDir direcctly:
 
                ```
                     file := CreateFSDir()
@@ -44,7 +43,7 @@
                
                ```
 
-           -    Using ReadDir:
+    -    Using ReadDir:
 
                ```
                     file := ReadDir(“./boom”)
@@ -69,7 +68,7 @@
                
                ```
 
-           -    Using WriteDir:
+    -    Using WriteDir:
 
                ```
                     file := WriteDir(“./boom”)
@@ -102,23 +101,23 @@
                
                ```
 
-    *   Files: This structs composed the Grids API and create specific grid based struct that handle file reading and writing operations and for easier use there exists simple instance creating functions to simplify its use:
+####Files: 
+This structs composed the Grids API and create specific grid based struct that handle file reading and writing operations and for easier use there exists simple instance creating functions to simplify its use:
 
-        *   FSFile: This grid struct handle the reading and writing of files by providing two channels (“Read” and “Write”) that recieves grid packets that contain as <header> file paths and meta details and in the case of writers streams of data as <body> to be written. Readers and Writers structs are built based on this struct(compose on this struct) as it encapsulates the basic file operations.
+ - FSFile: 
+   This grid struct handle the reading and writing of files by providing two channels (“Read” and “Write”) that recieves grid packets that contain as <header> file paths and meta details and in the case of writers streams of data as <body> to be written. Readers and Writers structs are built based on this struct(compose on this struct) as it encapsulates the basic file operations.
 
-        Helper Functions include:
+ Helper Functions include:
 
-        1.  CreateFSFile: This creates a FSFile struct  and returns a point which has included all the necessary logic 
-        for the reading and writing of files,its logic is written in a way to allow multiple use i.e not bound to specific file paths so as to allow it to be like a file reader and writer request manager, writing or reading to or from file paths listen within the packet `<header>`
+    1.  CreateFSFile: This creates a FSFile struct  and returns a point which has included all the necessary logic for the reading and writing of files,its logic is written in a way to allow multiple use i.e not bound to specific file paths so as to allow it to be like a file reader and writer request manager, writing or reading to or from file paths listen within the packet `<header>`
 
-        2.   ReadFile(file string): This helper creates a FileReader struct which enforces a one file reading operation i.e this creates a Reader that encapsulates and on servers the read channel of a FSFile grid for read only operations.
+    2.   ReadFile(file string): This helper creates a FileReader struct which enforces a one file reading operation i.e this creates a Reader that encapsulates and on servers the read channel of a FSFile grid for read only operations.
 
-       3.   WriteFile(file string): This helper creates a FileWriter struct which enforces a one file writing operation and maps all its operations down to the FSFile write channel
+    3.   WriteFile(file string): This helper creates a FileWriter struct which enforces a one file writing operation and maps all its operations down to the FSFile write channel
 
-
-       Examples:
+    Examples:
            
-           -    Using FSFile direcctly:
+    -    Using FSFile direcctly:
 
                ```
                     file := CreateFSFile()
@@ -134,7 +133,7 @@
                
                ```
 
-           -    Using ReadFile:
+   -    Using ReadFile:
 
                ```
                     file := ReadFile(“./boom.tx”)
@@ -159,7 +158,7 @@
                
                ```
 
-           -    Using WriteFile:
+    -    Using WriteFile:
 
                ```
                     file := ReadFile(“./boom.tx”)
