@@ -3,10 +3,11 @@ package fsgrid
 import (
 	"errors"
 	// "fmt"
-	"github.com/influx6/grids"
 	"os"
 	fpath "path/filepath"
 	"strings"
+
+	"github.com/influx6/grids"
 )
 
 type FSDir struct {
@@ -104,7 +105,7 @@ func CreateFSDir() *FSDir {
 			}
 
 			pack := grids.NewPacket()
-			pack.Copy(fp.Map.Map())
+			pack.Copy(fp.ToMap())
 			pack.Set("absolutefile", basefile)
 
 			for _, val := range list {
@@ -232,6 +233,7 @@ func CreateFSFile() *FSFile {
 
 		if !mod.Mode().IsDir() {
 			rb, err := os.Open(basefile)
+
 			if err != nil {
 				fp.Set("err", err)
 				// fp.Body["err"] = err
@@ -251,7 +253,9 @@ func CreateFSFile() *FSFile {
 
 			fp.Set("absoluteFile", basefile)
 			fp.Set("read", n)
+
 			pack := grids.NewPacket()
+			pack.Clone(fp.Map)
 
 			for _, val := range data {
 				pack.Push(val)
